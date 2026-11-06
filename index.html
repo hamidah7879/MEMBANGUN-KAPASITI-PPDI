@@ -13,4 +13,21 @@ function formatRange(a,b){const fmt=v=>{if(!v)return '';const d=new Date(v);retu
 function showData(data){if(!data||!data.ok){set('status','Ralat API: '+(data?.error||'Respons tidak sah'));return}const t=data.tetapan||{},s=data.statistik||{},k=s.kehadiran_mengikut_hari||{};set('name',t.nama_program||'Dashboard PPDI IAB 2026');set('location',t.lokasi||'Lokasi belum ditetapkan');set('dates',formatRange(t.tarikh_mula,t.tarikh_tamat));set('participants',s.jumlah_peserta??'—');set('confirmed',s.peserta_disahkan??'—');set('responses',s.jumlah_respons??'—');set('average',s.purata_penilaian==null?'—':s.purata_penilaian+' / 5');['Hari 1','Hari 2','Hari 3'].forEach((d,i)=>set('d'+(i+1),k[d]??0));schedule=Array.isArray(data.tentatif)?data.tentatif:[];renderDay();const links=el('links');links.replaceChildren();[['pautan_dokumentasi','Dokumentasi'],['pautan_bahan','Bahan bengkel'],['pautan_lokasi','Lokasi Google Maps']].forEach(([key,label])=>{try{const u=new URL(t[key]);if(u.protocol==='https:'){const a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;links.append(a)}}catch(e){}});if(!links.children.length)links.textContent='Pautan belum disediakan.';set('status','Data berjaya dikemas kini. Terakhir: '+new Date().toLocaleString('ms-MY'))}
 // JSONP digunakan kerana respons Apps Script ContentService tidak menyokong CORS biasa dari GitHub Pages.
 function load(){if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(API_URL)){set('status','Persediaan: masukkan URL Web App /exec ke dalam fail index.html.');return}const cb='ppdiDataCallback';window[cb]=showData;const script=document.createElement('script');script.src=API_URL+'?callback='+cb+'&_='+Date.now();script.onerror=()=>set('status','Gagal memuatkan API. Semak URL, akses Web App dan deployment terkini.');document.body.append(script);setTimeout(()=>script.remove(),15000)}load();
-</script></body></html>
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const tajuk = [...document.querySelectorAll('h2, h3')]
+    .find(el => el.textContent.trim() === 'Penilaian Slot Bengkel');
+
+  if (tajuk) {
+    const pautan = document.createElement('a');
+    pautan.href = 'https://forms.gle/911yMZBysuuyMA7d8';
+    pautan.target = '_blank';
+    pautan.rel = 'noopener noreferrer';
+    pautan.textContent = 'Isi Borang Penilaian Slot';
+    pautan.style.cssText = 'display:inline-block;margin-top:16px;padding:14px 22px;background:#155b43;color:white;border-radius:10px;text-decoration:none;font-weight:bold';
+    tajuk.parentElement.appendChild(pautan);
+  }
+});
+</script>
+</body></html>
